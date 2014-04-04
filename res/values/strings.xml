@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Databáze s lokací</string>
+    <string name="action_settings">Nastavení</string>
+    <string name="posuvnik">Interval obnovy polohy</string>
+    <string name="prepinac">Nevypnutelná služba</string>
+    <string name="lokaceNadpis">Poslední lokace: </string>
+    <string name="tlacitkoStart">Start</string>
+
+</resources>
