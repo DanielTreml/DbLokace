@@ -9,7 +9,7 @@ import android.util.Log;
 /** Helper to the database, manages versions and creation */
 public class DbHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "locationDB.db";
-	private static final int DATABASE_VERSION = 11;
+	private static final int DATABASE_VERSION = 14;
 
 	// Table name
 	public static final String TABLE = "location";

@@ -1,6 +1,10 @@
 package com.example.dblokace;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -54,9 +58,12 @@ public class Lokace {
 		pole[0]="";
 		pole[1]="";
         return pole;
-
     }   
 
+    public void setGeofence(LatLng pozice, float radius, long expiration, PendingIntent intent){   
+    	locationManager.addProximityAlert(pozice.latitude, pozice.longitude, radius, expiration, intent);
+    }
+    
     private class MyLocationListener implements LocationListener {
 
         @Override

@@ -1,102 +1,102 @@
 package com.example.dblokace;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.Geofence.Builder;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.model.*;
+
+import android.app.Activity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
+public class Mapa extends Activity {
 
-public class Mapa extends FragmentActivity  {
+	DbHelper dbh;
+	GoogleMap map;
+	Geofence gf;
 
-    private GoogleMap mMap;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		dbh = new DbHelper(this);
+		Cursor cursor = getEvents();
+		
+		map = ((MapFragment) getFragmentManager()
+				.findFragmentById(R.id.map)).getMap();
+		// You can customize the marker image using images bundled with
+		// your app, or dynamically generated bitmaps. 
+		NastavMapu(cursor);	
+		
+		map.setOnMapLongClickListener(new OnMapLongClickListener() {
+			
+			@Override
+			public void onMapLongClick(LatLng point) {
+				/*
+				gf = new Geofence.Builder()
+				.setRequestId("1")
+				.setCircularRegion(point.latitude, point.longitude, 50)
+				.setExpirationDuration(1000*60*10)
+				.build();*/
+				
+				map.addCircle(new CircleOptions()
+				.center(point)
+				.radius(50));
+			}
+			
+		});
+	}
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.i("Mapa","onCreate()");
-        setContentView(R.layout.activity_main);
-        setUpMapIfNeeded();
-    }
+	protected void NastavMapu(Cursor cursor){
+		while (cursor.moveToNext()) {
+			
+				long id = cursor.getLong(0);
+				long time = cursor.getLong(1);
+				String battery = cursor.getString(2);
+				String longitude = cursor.getString(3);				
+				String latitude = cursor.getString(4);
+				double Dlongitude = 0;
+				double Dlatitude = 0;
+				try{
+					Dlongitude = Double.valueOf(longitude);
+					Dlatitude = Double.valueOf(latitude);
+				}
+				catch(NumberFormatException e){					
+				}
+				
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm, dd.MMM.yyyy");
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
-    }
+		        Date resultdate = new Date(time);
+		        String cas = ((sdf.format(resultdate)).toString());
+				
+				//if(Dlatitude!=0){
+				PridejMarker(new LatLng(Dlatitude, Dlongitude), cas);	  
+				map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+					new LatLng(Dlatitude, Dlongitude), 16)); 					
+				//}		
+		}
+	}
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                //setUpMap();
-            }
-        }
-    }
+	private Cursor getEvents() {
+		SQLiteDatabase db = dbh.getReadableDatabase();
+		Cursor cursor = db.query(DbHelper.TABLE, null, null, null, null,
+				null, null);
 
+		startManagingCursor(cursor);
+		return cursor;
+	}
+
+	protected void PridejMarker(LatLng pozice, String cas){
+		map.addMarker(new MarkerOptions()
+		.icon(BitmapDescriptorFactory.defaultMarker())
+		.title(cas)
+		.snippet(pozice.toString())
+		.anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
+		.position(pozice));
+	}
 }
-
-/*
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-
-public class Mapa extends FragmentActivity {
-
-    private GoogleMap mMap;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setUpMapIfNeeded();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
-    }
-
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
-        }
-    }
-
-    private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-    }
-}
-*/

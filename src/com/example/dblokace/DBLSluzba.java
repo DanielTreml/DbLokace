@@ -1,6 +1,7 @@
 package com.example.dblokace;
 
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -12,7 +13,6 @@ public class DBLSluzba extends IntentService{
 
 	private Lokace lokace;
 	public SharedPreferences nastaveni;
-	private boolean prubeh = true;
 	private DbHelper dbh;
 	
 	public DBLSluzba() {
@@ -59,6 +59,12 @@ public class DBLSluzba extends IntentService{
 		dbh = new DbHelper(this);
 		
 		lokace = new Lokace(this);
+		String[] s={"12.154","125.0524"};
+		//addToDatabase(s);
+		
+	    //Intent inten = new Intent(this, Mapa.class);
+	    //PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+	    //lokace.setGeofence(new LatLng(0, 0), 50, 1000*60*10, pIntent);
 		//adapter = new DBAdapter();
 		//adapter.init(this);
 		/*
@@ -73,10 +79,6 @@ public class DBLSluzba extends IntentService{
 			return Service.START_NOT_STICKY;
 		}
 		*/
-		String[] poloha = new String[2];
-		poloha[0]="pokus1";
-		poloha[1]="pokus2";
-		addToDatabase(poloha);
 		return Service.START_STICKY;
 	}
 }
