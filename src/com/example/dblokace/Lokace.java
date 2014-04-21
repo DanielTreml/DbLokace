@@ -13,8 +13,8 @@ import android.util.Log;
 
 public class Lokace {
     
-    private final long MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 100; // in Meters
-    private final long MINIMUM_TIME_BETWEEN_UPDATES = 10000; // in Milliseconds
+    private final long MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 30; // in Meters
+    private final long MINIMUM_TIME_BETWEEN_UPDATES = 1*1000*21; // in Milliseconds
     private Context ctx;
     
     private LocationManager locationManager;

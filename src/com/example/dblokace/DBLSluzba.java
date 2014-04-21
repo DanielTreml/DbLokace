@@ -7,11 +7,13 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.util.Log;
 
 public class DBLSluzba extends IntentService{
 
-	private Lokace lokace;
+	//private Lokace lokace;
+	//private LocationHelper locationHelper = new LocationHelper(this);
 	public SharedPreferences nastaveni;
 	private DbHelper dbh;
 	
@@ -23,22 +25,46 @@ public class DBLSluzba extends IntentService{
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Log.d("Sluzba", "onHandleIntent()");
+		//LocationHelper locationHelper = new LocationHelper(this);
+		//locationHelper.RunHelper();
+		
+		new Thread()
+	    {
+	        public void run() {
+	            
+	        }
+	    }.start();
+		/*
 		while(true){
 			//if(prubeh){
 	    		Log.i("Sluzba", "cyklus");
 				try{
-					String[] poloha = lokace.SoucasnaPoloha();
-					addToDatabase(poloha);
-					Log.i("Sluzba", "onHandleIntent()-"+poloha[0]+"-"+poloha[1]);
-					Thread.sleep(1*1000*60);
+					//String[] poloha = lokace.SoucasnaPoloha();
+					addToDatabaseNew(locationHelper.GetLastKnownPosition());
+					//addToDatabase(poloha);
+					//Log.i("Sluzba", "onHandleIntent()-"+poloha[0]+"-"+poloha[1]);
+					Thread.sleep(locationHelper.minimumTime);//1*1000*7);
 				}
 				catch(Exception e){
-					Log.e("Sluzba","onHandleIntent()-Error");
+					Log.e("Sluzba","onHandleIntent()-Error"+e.getMessage());
 				}			
 			//}
-		}
+		}*/
 	}
 
+	  private void addToDatabaseNew(Location loc) {
+		  if(loc!=null){
+			  SQLiteDatabase db = dbh.getWritableDatabase();
+		    ContentValues values = new ContentValues();
+		    values.put(DbHelper.TIME, System.currentTimeMillis());
+		    values.put(DbHelper.BATTERY, "xxx");
+		    values.put(DbHelper.LONGITUDE, String.valueOf(loc.getLatitude()));
+		    values.put(DbHelper.LATITUDE, String.valueOf(loc.getLongitude()));
+		    db.insert(DbHelper.TABLE, null, values);
+		    Log.i("Databaze","vložení dat:"+loc.getLatitude()+"-"+loc.getLongitude());
+		  }
+		  
+		  }
 
 	  private void addToDatabase(String[] poloha) {
 		    SQLiteDatabase db = dbh.getWritableDatabase();
@@ -58,8 +84,11 @@ public class DBLSluzba extends IntentService{
 		nastaveni = getSharedPreferences("com.example.dblokace", MODE_PRIVATE);
 		dbh = new DbHelper(this);
 		
-		lokace = new Lokace(this);
-		String[] s={"12.154","125.0524"};
+		//locationHelper = new LocationHelper(this);
+		//lokace = new Lokace(this);
+		
+		
+		//String[] s={"12.154","125.0524"};
 		//addToDatabase(s);
 		
 	    //Intent inten = new Intent(this, Mapa.class);
